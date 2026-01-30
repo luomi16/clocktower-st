@@ -1,10 +1,13 @@
 import type { Role } from "../data/troubleBrewing";
 
-interface Props {
-  role: Role;
-}
+export default function RoleToken({ role }: { role: Role }) {
+  const colorMap: Record<string, string> = {
+    townsfolk: "#444",
+    outsider: "#1e90ff",
+    minion: "#c0392b",
+    demon: "#8e0000",
+  };
 
-export default function RoleToken({ role }: Props) {
   return (
     <div
       draggable
@@ -13,16 +16,19 @@ export default function RoleToken({ role }: Props) {
         e.dataTransfer.setData("roleId", role.id);
       }}
       style={{
-        padding: 8,
-        border: "1px solid #333",
+        padding: "6px 8px",
+        border: `1px solid ${colorMap[role.alignment]}`,
         borderRadius: 6,
-        marginRight: 6,
-        background: "#eee",
-        cursor: "grab",
         fontSize: 12,
+        cursor: "grab",
+        color: colorMap[role.alignment],
+        background: "#fafafa",
+        textAlign: "center",
+        minWidth: 80,
       }}
     >
-      {role.name}
+      <div style={{ fontWeight: 600 }}>{role.zh}</div>
+      <div style={{ fontSize: 10 }}>{role.en}</div>
     </div>
   );
 }
