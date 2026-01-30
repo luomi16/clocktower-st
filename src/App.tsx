@@ -1,15 +1,35 @@
-function App() {
-  return (
-    <div style={{ padding: "2rem", fontFamily: "serif" }}>
-      <h1>🩸 Blood on the Clocktower</h1>
-      <h2>Storyteller Console</h2>
+import { useState } from "react";
+import SetupScreen from "./components/SetupScreen";
+import PlayerList from "./components/PlayerList";
+import CircleBoard from "./components/CircleBoard";
+import RolePool from "./components/RolePool";
+import type { Player, Script } from "./types";
 
-      <p>
-        This is a private storyteller-only tool for managing roles, nights,
-        and notes.
-      </p>
+export default function App() {
+  const [script, setScript] = useState<Script | null>(null);
+  const [players, setPlayers] = useState<Player[]>([]);
+
+  if (!script) {
+    return (
+      <SetupScreen
+        onStart={(script, count) => {
+          setScript(script);
+          setPlayers(
+            Array.from({ length: count }, (_, i) => ({
+              id: i,
+              name: "",
+            }))
+          );
+        }}
+      />
+    );
+  }
+
+  return (
+    <div>
+      <RolePool />
+      <PlayerList players={players} setPlayers={setPlayers} />
+      <CircleBoard players={players} seatCount={players.length} />
     </div>
   );
 }
-
-export default App;
