@@ -4,9 +4,10 @@ import type { Seat } from "../types";
 
 interface Props {
   seats: Seat[];
+  setSeats: (seats: Seat[]) => void;
 }
 
-export default function RolePool({ seats }: Props) {
+export default function RolePool({ seats, setSeats }: Props) {
   const usedRoleIds = new Set(
     seats.map((s) => s.roleId).filter(Boolean)
   );
@@ -21,9 +22,22 @@ export default function RolePool({ seats }: Props) {
   const demon = availableRoles.filter(r => r.alignment === "demon");
 
   return (
-    <div style={{ padding: 12 }}>
-      {/* 镇民 */}
-      <h4>🟦 镇民(Townsfolk)</h4>
+    <div
+      style={{ padding: 12 }}
+      onDragOver={(e) => e.preventDefault()}
+      onDrop={(e) => {
+        const type = e.dataTransfer.getData("type");
+        if (type === "role") {
+          const roleId = e.dataTransfer.getData("roleId");
+          setSeats(
+            seats.map((s) =>
+              s.roleId === roleId ? { ...s, roleId: undefined } : s
+            )
+          );
+        }
+      }}
+    >
+      <h4>🟦 镇民</h4>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
         {townsfolk.map(r => <RoleToken key={r.id} role={r} />)}
       </div>

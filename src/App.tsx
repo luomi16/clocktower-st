@@ -40,9 +40,14 @@ export default function App() {
     <div>
       {setup && <RoleCountHint setup={setup} />}
 
-      <RolePool seats={seats} />
+      <RolePool seats={seats} setSeats={setSeats} />
 
-      <PlayerList players={players} setPlayers={setPlayers} />
+      <PlayerList
+        players={players}
+        setPlayers={setPlayers}
+        seats={seats}
+        setSeats={setSeats}
+      />
 
       <CircleBoard
         players={players}

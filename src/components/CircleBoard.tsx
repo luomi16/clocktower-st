@@ -82,8 +82,8 @@ export default function CircleBoard({
       >
         {seats.map((seat, index) => {
           const angle = (2 * Math.PI * index) / seats.length;
-          const x = center + radius * Math.cos(angle) - 45;
-          const y = center + radius * Math.sin(angle) - 35;
+          const x = center + 180 * Math.cos(angle) - 45;
+          const y = center + 180 * Math.sin(angle) - 35;
 
           const role = seat.roleId ? roleMap.get(seat.roleId) : undefined;
           const player = players.find((p) => p.id === seat.playerId);
@@ -109,9 +109,7 @@ export default function CircleBoard({
                 }
 
                 if (type === "player") {
-                  const playerId = Number(
-                    e.dataTransfer.getData("playerId")
-                  );
+                  const playerId = Number(e.dataTransfer.getData("playerId"));
                   setSeats(
                     seats.map((s) => {
                       if (s.playerId === playerId)
@@ -137,7 +135,19 @@ export default function CircleBoard({
                 fontSize: 12,
               }}
             >
-              <div>
+              {/* 🎭 角色（可单独拖） */}
+              <div
+                draggable={!!seat.roleId}
+                onDragStart={(e) => {
+                  if (!seat.roleId) return;
+                  e.dataTransfer.setData("type", "role");
+                  e.dataTransfer.setData("roleId", seat.roleId);
+                }}
+                style={{
+                  cursor: seat.roleId ? "grab" : "default",
+                  marginBottom: 4,
+                }}
+              >
                 {role ? (
                   <>
                     <div style={{ fontWeight: 600 }}>{role.zh}</div>
@@ -148,7 +158,23 @@ export default function CircleBoard({
                 )}
               </div>
 
-              <div style={{ marginTop: 4 }}>
+              {/* 👤 玩家（可单独拖） */}
+              <div
+                draggable={seat.playerId !== undefined}
+                onDragStart={(e) => {
+                  if (seat.playerId === undefined) return;
+                  e.dataTransfer.setData("type", "player");
+                  e.dataTransfer.setData(
+                    "playerId",
+                    String(seat.playerId)
+                  );
+                }}
+                style={{
+                  marginTop: 4,
+                  cursor:
+                    seat.playerId !== undefined ? "grab" : "default",
+                }}
+              >
                 {player
                   ? player.name || `#${player.id + 1}`
                   : "Drop Player"}
