@@ -33,7 +33,6 @@ export default function CircleBoard({
   setSeats,
   setup,
 }: Props) {
-  const radius = 180;
   const center = 220;
 
   const roleCounts = countRolesByAlignment(seats);
