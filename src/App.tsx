@@ -34,7 +34,7 @@ export default function App() {
       {setup && <RoleCountHint setup={setup} />}
       <RolePool />
       <PlayerList players={players} setPlayers={setPlayers} />
-      <CircleBoard players={players} seatCount={players.length} />
+      <CircleBoard players={players} seatCount={players.length} setup={setup} />
     </div>
   );
 }
