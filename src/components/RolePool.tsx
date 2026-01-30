@@ -1,11 +1,24 @@
 import { troubleBrewingRoles } from "../data/troubleBrewing";
 import RoleToken from "./RoleToken";
+import type { Seat } from "../types";
 
-export default function RolePool() {
-  const townsfolk = troubleBrewingRoles.filter(r => r.alignment === "townsfolk");
-  const outsiders = troubleBrewingRoles.filter(r => r.alignment === "outsider");
-  const minions = troubleBrewingRoles.filter(r => r.alignment === "minion");
-  const demon = troubleBrewingRoles.filter(r => r.alignment === "demon");
+interface Props {
+  seats: Seat[];
+}
+
+export default function RolePool({ seats }: Props) {
+  const usedRoleIds = new Set(
+    seats.map((s) => s.roleId).filter(Boolean)
+  );
+
+  const availableRoles = troubleBrewingRoles.filter(
+    (r) => !usedRoleIds.has(r.id)
+  );
+
+  const townsfolk = availableRoles.filter(r => r.alignment === "townsfolk");
+  const outsiders = availableRoles.filter(r => r.alignment === "outsider");
+  const minions = availableRoles.filter(r => r.alignment === "minion");
+  const demon = availableRoles.filter(r => r.alignment === "demon");
 
   return (
     <div style={{ padding: 12 }}>

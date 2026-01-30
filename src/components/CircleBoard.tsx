@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import type { Player, Seat } from "../types";
 import type { Role } from "../data/troubleBrewing";
 import type { RoleCount } from "../data/troubleBrewingSetup";
@@ -6,90 +5,51 @@ import { troubleBrewingRoles } from "../data/troubleBrewing";
 
 interface Props {
   players: Player[];
-  seatCount: number;
+  seats: Seat[];
+  setSeats: (seats: Seat[]) => void;
   setup: RoleCount;
 }
 
-/**
- * Build a quick lookup map for roles
- */
 const roleMap: Map<string, Role> = new Map(
   troubleBrewingRoles.map((r) => [r.id, r])
 );
 
-/**
- * Count how many roles of each alignment are currently on the board
- */
 function countRolesByAlignment(seats: Seat[]) {
   return seats.reduce(
     (acc, seat) => {
       if (!seat.roleId) return acc;
-
       const role = roleMap.get(seat.roleId);
       if (!role) return acc;
-
       acc[role.alignment]++;
       return acc;
     },
-    {
-      townsfolk: 0,
-      outsider: 0,
-      minion: 0,
-      demon: 0,
-    }
+    { townsfolk: 0, outsider: 0, minion: 0, demon: 0 }
   );
 }
 
 export default function CircleBoard({
   players,
-  seatCount,
+  seats,
+  setSeats,
   setup,
 }: Props) {
-  const [seats, setSeats] = useState<Seat[]>([]);
-
-  /**
-   * Rebuild seats whenever player count changes
-   */
-  useEffect(() => {
-    setSeats(
-      Array.from({ length: seatCount }, (_, i) => ({
-        seatId: i,
-      }))
-    );
-  }, [seatCount]);
-
   const radius = 180;
   const center = 220;
 
-  // ---- role count & warnings ----
   const roleCounts = countRolesByAlignment(seats);
-
   const warnings: string[] = [];
 
-  if (roleCounts.townsfolk > setup.townsfolk) {
-    warnings.push(
-      `镇民超出 ${roleCounts.townsfolk - setup.townsfolk} 个`
-    );
-  }
-  if (roleCounts.outsider > setup.outsider) {
-    warnings.push(
-      `外来者超出 ${roleCounts.outsider - setup.outsider} 个`
-    );
-  }
-  if (roleCounts.minion > setup.minion) {
-    warnings.push(
-      `爪牙超出 ${roleCounts.minion - setup.minion} 个`
-    );
-  }
-  if (roleCounts.demon > setup.demon) {
-    warnings.push(
-      `恶魔超出 ${roleCounts.demon - setup.demon} 个`
-    );
-  }
+  if (roleCounts.townsfolk > setup.townsfolk)
+    warnings.push(`镇民超出 ${roleCounts.townsfolk - setup.townsfolk} 个`);
+  if (roleCounts.outsider > setup.outsider)
+    warnings.push(`外来者超出 ${roleCounts.outsider - setup.outsider} 个`);
+  if (roleCounts.minion > setup.minion)
+    warnings.push(`爪牙超出 ${roleCounts.minion - setup.minion} 个`);
+  if (roleCounts.demon > setup.demon)
+    warnings.push(`恶魔超出 ${roleCounts.demon - setup.demon} 个`);
 
   return (
     <>
-      {/* 🔴 warning bar */}
       {warnings.length > 0 && (
         <div
           style={{
@@ -99,11 +59,10 @@ export default function CircleBoard({
             color: "#c0392b",
             border: "1px solid #c0392b",
             borderRadius: 6,
-            fontSize: 13,
           }}
         >
           ⚠️ 当前角色配置不合法：
-          <ul style={{ margin: "4px 0 0 16px" }}>
+          <ul>
             {warnings.map((w, i) => (
               <li key={i}>{w}</li>
             ))}
@@ -111,7 +70,6 @@ export default function CircleBoard({
         </div>
       )}
 
-      {/* 🩸 circle board */}
       <div
         style={{
           margin: "40px auto",
@@ -123,17 +81,12 @@ export default function CircleBoard({
         }}
       >
         {seats.map((seat, index) => {
-          const angle = (2 * Math.PI * index) / seatCount;
+          const angle = (2 * Math.PI * index) / seats.length;
           const x = center + radius * Math.cos(angle) - 45;
           const y = center + radius * Math.sin(angle) - 35;
 
-          const role = seat.roleId
-            ? roleMap.get(seat.roleId)
-            : undefined;
-
-          const player = players.find(
-            (p) => p.id === seat.playerId
-          );
+          const role = seat.roleId ? roleMap.get(seat.roleId) : undefined;
+          const player = players.find((p) => p.id === seat.playerId);
 
           return (
             <div
@@ -144,19 +97,12 @@ export default function CircleBoard({
 
                 if (type === "role") {
                   const roleId = e.dataTransfer.getData("roleId");
-
                   setSeats(
                     seats.map((s) => {
-                      // ① 先清掉这个角色在其他座位上的残留
-                      if (s.roleId === roleId) {
+                      if (s.roleId === roleId)
                         return { ...s, roleId: undefined };
-                      }
-
-                      // ② 再放到当前座位
-                      if (s.seatId === seat.seatId) {
+                      if (s.seatId === seat.seatId)
                         return { ...s, roleId };
-                      }
-
                       return s;
                     })
                   );
@@ -167,11 +113,13 @@ export default function CircleBoard({
                     e.dataTransfer.getData("playerId")
                   );
                   setSeats(
-                    seats.map((s) =>
-                      s.seatId === seat.seatId
-                        ? { ...s, playerId }
-                        : s
-                    )
+                    seats.map((s) => {
+                      if (s.playerId === playerId)
+                        return { ...s, playerId: undefined };
+                      if (s.seatId === seat.seatId)
+                        return { ...s, playerId };
+                      return s;
+                    })
                   );
                 }
               }}
