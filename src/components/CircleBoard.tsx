@@ -174,9 +174,20 @@ export default function CircleBoard({
                     seat.playerId !== undefined ? "grab" : "default",
                 }}
               >
-                {player
-                  ? player.name || `#${player.id + 1}`
-                  : "Drop Player"}
+                {player ? (
+                  <div>
+                    <div style={{ fontWeight: 600 }}>
+                      #{player.id + 1}
+                    </div>
+                    {player.name && (
+                      <div style={{ fontSize: 11 }}>
+                        {player.name}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  "Drop Player"
+                )}
               </div>
             </div>
           );

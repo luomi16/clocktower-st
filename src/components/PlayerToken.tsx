@@ -14,18 +14,37 @@ export default function PlayerToken({ player, onNameChange }: Props) {
         e.dataTransfer.setData("playerId", String(player.id));
       }}
       style={{
-        padding: 8,
+        padding: "6px 8px",
         border: "1px solid #ccc",
+        borderRadius: 6,
+        cursor: "grab",
+        background: "#fafafa",
+        textAlign: "center",
         marginRight: 8,
         width: 80,
       }}
     >
-      <div>#{player.id + 1}</div>
+      <div
+        style={{
+          fontWeight: 600,
+          fontSize: 13,
+          marginBottom: 4,
+        }}
+      >
+        #{player.id + 1}
+      </div>
       <input
-        placeholder="Name"
         value={player.name}
+        placeholder="Name"
         onChange={(e) => onNameChange(e.target.value)}
-        style={{ width: "100%" }}
+        style={{
+          width: "100%",
+          fontSize: 12,
+          textAlign: "center",
+          border: "none",
+          outline: "none",
+          background: "transparent",
+        }}
       />
     </div>
   );

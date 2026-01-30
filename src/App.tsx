@@ -121,7 +121,7 @@ export default function App() {
             setSeats([]);
           }}
         >
-          ⬅️ Back
+          ⬅ Back
         </button>
 
         {/* 中间占位（让左右完全独立） */}
@@ -158,7 +158,7 @@ export default function App() {
               );
             }}
           >
-            🔄 Reset
+            Reset
           </button>
         </div>
       </div>
